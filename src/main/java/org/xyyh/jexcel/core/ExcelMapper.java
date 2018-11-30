@@ -3,6 +3,7 @@ package org.xyyh.jexcel.core;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,8 +31,17 @@ public class ExcelMapper {
 		}
 	}
 
+	public void WriteToExcel(List<Map> datas, OutputStream stream) {
+		writeToExcel(datas, new MapRowMapper(), stream);
+	}
+
+	public void writeToExcel(List<Object> datas, OutputStream stream) {
+		writeToExcel(datas, new SimpleObjectRowMapper(), stream);
+	}
+
 	private <T> void writeCells(Row row, T data, RowMapper<T> rowMapper) {
 		int columnSize = rowMapper.getColumnCount(data);
+
 		for (int i = 0; i < columnSize; i++) {
 			Cell cell = row.createCell(i);
 			CellValue obj = rowMapper.getData(data, i);
@@ -42,6 +52,7 @@ public class ExcelMapper {
 	private void writeCell(Cell cell, CellValue cellValue) {
 		cell.setCellStyle(cellValue.getCellStyle());
 		cell.setCellType(cellValue.getCellType());
+
 		cell.setCellValue((double) cellValue.getValue());
 	}
 
