@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 public class ExcelMapper {
 
 	public <T> Object toExcel(List<T> t) {
-
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		return t;
 	}
@@ -49,8 +48,8 @@ public class ExcelMapper {
 	 * @param t
 	 * @param      <T>
 	 * @return
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 */
 	public void toExcelByObject(String path, List<Object> t) throws FileNotFoundException, IOException {
 		try (FileOutputStream fileOut = new FileOutputStream(path)) {
@@ -169,12 +168,13 @@ public class ExcelMapper {
 	}
 
 	/**
-	 * 设置输出header格式
+	 * 设置输出header格式 暂时不要关心下载的问题
 	 * 
 	 * @param filename
 	 * @param response
 	 * @throws UnsupportedEncodingException
 	 */
+	@Deprecated
 	private void setHeader(String filename, HttpServletResponse response) throws UnsupportedEncodingException {
 		response.setContentType("application/vnd.ms-excel;charset=UTF-8");
 		filename = filename + ".xls";
