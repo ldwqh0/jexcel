@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,13 +25,15 @@ public class TestExcel {
 	public void testMapExport() throws FileNotFoundException, IOException {
 		List<Map<String, Object>> datas = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			Map<String, Object> data = new HashMap<>();
+			Map<String, Object> data = new LinkedHashMap<>();
 			data.put("index", i);
 			data.put("name", "name" + i);
 			data.put("age", i + 10);
 			datas.add(data);
 		}
+
 		ExcelMapper mapper = new ExcelMapper();
+
 		mapper.toExcel(datas, "d:/text.xlsx");
 	}
 }

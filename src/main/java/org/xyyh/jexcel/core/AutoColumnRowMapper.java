@@ -1,6 +1,7 @@
 package org.xyyh.jexcel.core;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public class AutoColumnRowMapper extends FixedColumnMapRowMapper {
 	public AutoColumnRowMapper(Map<String, Object> sample) {
 		super();
 		List<String> keys = IterableUtils.toList(sample.keySet());
-		if (sample instanceof LinkedMap || sample instanceof LinkedMap) {
+		if (sample instanceof LinkedMap || sample instanceof LinkedHashMap) {
 			super.setHeaders(keys);
 			super.setHeaders(keys);
 		} else {
