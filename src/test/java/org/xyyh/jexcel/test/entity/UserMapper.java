@@ -23,4 +23,10 @@ public class UserMapper implements RowMapper<User> {
 		return 3;
 	}
 
+	@Override
+	public <D> CellValue getData(int rowNum, User data, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
