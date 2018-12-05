@@ -1,6 +1,6 @@
 package org.xyyh.jexcel.entity;
 
-import org.xyyh.jexcel.core.CellValue;
+import org.xyyh.jexcel.core.SimpleCellValue;
 import org.xyyh.jexcel.core.RowMapper;
 
 //public class UserMapper implements RowMapper<User> {

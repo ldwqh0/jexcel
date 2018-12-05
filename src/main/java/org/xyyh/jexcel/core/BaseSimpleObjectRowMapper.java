@@ -1,15 +1,17 @@
 package org.xyyh.jexcel.core;
 
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class BaseSimpleObjectRowMapper implements RowMapper<Object> {
 
 	@Override
-	public <D> CellValue getData(int rowNum,Object data, int index) {
+	public <D> SimpleCellValue getData(int rowNum, Object data, int index) {
 		// TODO Auto-generated method stub
-		CellValue<Object> cellValue = new CellValue<>();
+		SimpleCellValue<Object> cellValue = new SimpleCellValue<>();
 		cellValue.setCellStyle(null);
 		cellValue.setCellType(CellType.STRING);
 		Field[] fields = data.getClass().getDeclaredFields();
@@ -19,13 +21,13 @@ public class BaseSimpleObjectRowMapper implements RowMapper<Object> {
 			field = data.getClass().getDeclaredField(name);
 			field.setAccessible(true);
 			Object value = field.get(data);
-			if(value != null){
-				if(rowNum >0){
+			if (value != null) {
+				if (rowNum > 0) {
 					cellValue.setValue(value);
-				}else{
+				} else {
 					cellValue.setValue(name);
 				}
-			}else {
+			} else {
 				cellValue.setValue("");
 			}
 		} catch (NoSuchFieldException | IllegalAccessException e) {
@@ -40,6 +42,35 @@ public class BaseSimpleObjectRowMapper implements RowMapper<Object> {
 		Field[] fields = data.getClass().getDeclaredFields();
 		int length = fields.length;
 		return length;
+	}
+
+	@Override
+	public List<String> getHeaders() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getColumnCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public <D> SimpleCellValue<?> getData(int colIndex, Object data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SimpleCellValue<?> getCellValueD(int colIndex, Object data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CellValue getCellValue(int colIndex, Object data) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
