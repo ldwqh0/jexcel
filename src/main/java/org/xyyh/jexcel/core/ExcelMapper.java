@@ -8,6 +8,7 @@ import java.util.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 public class ExcelMapper {
@@ -19,72 +20,48 @@ public class ExcelMapper {
 
 	/**
 	 * 由Map输出Excel(制定文件路径)
-	 * 
 	 * @param t
 	 * @param   <T>
 	 * @return
 	 */
-	public <T> Object toExcel(String path, List<LinkedHashMap> t) {
-		FileOutputStream fileOut = null;
-		try {
-			fileOut = new FileOutputStream(path);
+	public <T> Object toExcel(String path, List<LinkedHashMap> t) throws IOException {
+		try (FileOutputStream fileOut = new FileOutputStream(path)){
 			WriteToExcel(t, fileOut);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				fileOut.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 		return t;
 	}
 
 	/**
 	 * 实体对象输出excel到制定路径
-	 * 
 	 * @param path
 	 * @param t
-	 * @param      <T>
-	 * @return
 	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @throws FileNotFoundException 
 	 */
-	public void toExcelByObject(String path, List<Object> t) throws FileNotFoundException, IOException {
+	public void toExcelByObject(String path, List<? extends Object> t) throws FileNotFoundException, IOException {
 		try (FileOutputStream fileOut = new FileOutputStream(path)) {
-//			fileOut
-//			writeToExcel(t, fileOut);
+			writeToExcel(fileOut,t);
 		}
-//		return t;
 	}
 
-	/**
-	 * 由Map通过http从网页导出
-	 * 
-	 * @param response
-	 * @param t
-	 * @param          <T>
-	 * @return
-	 */
-	public <T> Object toExcel(String fileName, HttpServletResponse response, List<LinkedHashMap> t) {
-		try {
+    /**
+     * 由Map通过http从网页导出
+     * @param fileName
+     * @param response
+     * @param t
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+	public <T> Object toExcel(String fileName, HttpServletResponse response, List<LinkedHashMap> t) throws IOException {
+        try(ServletOutputStream outputStream = response.getOutputStream()) {
 			setHeader(fileName, response);
-			WriteToExcel(t, response.getOutputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				response.getOutputStream().close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+            WriteToExcel(t, outputStream);
 		}
-
 		return t;
 	}
 
-	public <T> void writeToExcel(List<T> t, RowMapper<T> rowMapper, OutputStream stream) {
+	public <T> void writeToExcel(List<T> t, RowMapper<T> rowMapper, OutputStream stream) throws IOException {
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		Sheet sheet = workbook.createSheet("sheet1");
 		int size = t.size();
@@ -100,11 +77,7 @@ public class ExcelMapper {
 			// 逐行写入表单
 			writeCells(rowNum, row, data, rowMapper);
 		}
-		try {
-			workbook.write(stream);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		workbook.write(stream);
 	}
 
 	/**
@@ -113,24 +86,24 @@ public class ExcelMapper {
 	 * @param datas
 	 * @param stream
 	 */
-	public void WriteToExcel(List<LinkedHashMap> datas, OutputStream stream) {
+	public void WriteToExcel(List<LinkedHashMap> datas, OutputStream stream) throws IOException {
 
 		writeToExcel(datas, new MapRowMapper(), stream);
 	}
 
 	/**
 	 * 简单对象类型行映射
-	 * 
+	 *
 	 * @param datas
 	 * @param stream
 	 */
-	public <T> void writeToExcel(OutputStream stream, List<T> datas, Class<T> tClass) {
-		Object o = datas.get(0);
-//		tClass.get
-//		writeToExcel(datas, new BaseSimpleObjectRowMapper(), stream);
+	public <T> void writeToExcel(OutputStream stream, List<T> datas) throws IOException {
+
+		writeToExcel(datas,new BaseSimpleObjectRowMapper(),stream);
 	}
 
-	private <T> void writeCells(int rowNum, Row row, T data, RowMapper<T> rowMapper) {
+
+    private <T> void writeCells(int rowNum, Row row, T data, RowMapper<T> rowMapper) {
 		int columnSize = rowMapper.getColumnCount(data);
 
 		for (int i = 0; i < columnSize; i++) {
