@@ -8,7 +8,7 @@ public interface RowMapper<T> {
 	 * @param index
 	 * @return
 	 */
-	public <D> CellValue getData(T data, int index);
+	public <D> CellValue getData(int rowNum,T data, int index);
 
 	public int getColumnCount(T data);
 }
