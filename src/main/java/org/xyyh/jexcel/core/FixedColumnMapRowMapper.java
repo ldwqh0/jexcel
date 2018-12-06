@@ -34,18 +34,6 @@ public class FixedColumnMapRowMapper implements RowMapper<Map<String, Object>> {
 	}
 
 	@Override
-	public <D> SimpleCellValue<?> getData(@Deprecated int rowNum, Map<String, Object> data, int index) {
-		String key = keys.get(index);
-		Object value = data.get(key);
-		return new SimpleCellValue<>(value);
-	}
-
-	@Override
-	public int getColumnCount(Map<String, Object> data) {
-		return this.headers.size();
-	}
-
-	@Override
 	public List<String> getHeaders() {
 		return this.headers;
 	}
@@ -53,13 +41,6 @@ public class FixedColumnMapRowMapper implements RowMapper<Map<String, Object>> {
 	@Override
 	public int getColumnCount() {
 		return this.headers.size();
-	}
-
-	@Override
-	public SimpleCellValue<?> getCellValueD(int colIndex, Map<String, Object> data) {
-		String key = keys.get(colIndex);
-		Object value = data.get(key);
-		return new SimpleCellValue<>(value);
 	}
 
 	@Override

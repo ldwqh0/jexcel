@@ -2,13 +2,13 @@ package org.xyyh.jexcel.test.entity;
 
 import java.util.List;
 
-import org.xyyh.jexcel.core.SimpleCellValue;
-import org.apache.poi.ss.usermodel.CellValue;
 import org.xyyh.jexcel.core.RowMapper;
+import org.xyyh.jexcel.core.SimpleCellValue;
 
 public class UserMapper implements RowMapper<User> {
 
-	public <D> SimpleCellValue getData(User data, int index) {
+//	@Override
+	public <D> SimpleCellValue<?> getData(User data, int index) {
 		if (index == 1) {
 			SimpleCellValue cellValue = new SimpleCellValue<>();
 			cellValue.setCellStyle(null);
@@ -18,22 +18,6 @@ public class UserMapper implements RowMapper<User> {
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public int getColumnCount(User data) {
-		return 3;
-	}
-
-	@Override
-	public <D> SimpleCellValue getData(int rowNum, User data, int index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public <D> SimpleCellValue<?> getData(int colIndex, User data) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -49,13 +33,7 @@ public class UserMapper implements RowMapper<User> {
 	}
 
 	@Override
-	public SimpleCellValue<?> getCellValueD(int colIndex, User data) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CellValue getCellValue(int colIndex, User data) {
+	public org.apache.poi.ss.usermodel.CellValue getCellValue(int colIndex, User data) {
 		// TODO Auto-generated method stub
 		return null;
 	}

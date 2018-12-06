@@ -1,15 +1,14 @@
 package org.xyyh.jexcel.test;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
 import org.xyyh.jexcel.core.ExcelMapper;
+import org.xyyh.jexcel.core.ObjectRowMapper;
+import org.xyyh.jexcel.test.entity.Student;
+import org.xyyh.jexcel.test.entity.User;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author: max
@@ -17,23 +16,60 @@ import org.xyyh.jexcel.core.ExcelMapper;
  * @Description: 测试提交
  */
 public class TestExcel {
-	public static void main(String[] args) {
+	@Test
+	public void Test() {
+		ExcelMapper excelMapper = new ExcelMapper();
+//        List<Map> list = new ArrayList<>();
+//        for (int i = 0; i < 3; i++) {
+//            Map<Object,Object> map = new HashMap<>();
+//            map.put("name",""+"mm"+i);
+//            map.put("age",12+i);
+//            map.put(12,++i);
+//            list.add(map);
+//        }
+		OutputStream os = System.out;
+//        excelMapper.WriteToExcel(list,os);
+
+		List<Student> list = new ArrayList<>();
+		;
+		for (int i = 0; i < 3; i++) {
+			Student student = new Student();
+//			student.setId(i);
+//			student.setBirthday(new Date());
+			student.setName("pangwa" + i + "");
+			student.setScore(((double) (i + 5)));
+			list.add(student);
+		}
+//        excelMapper.writeToExcel(list,os);
 		System.out.println("Hello World");
 	}
 
+	/**
+	 * 输入map格式导出到制定路径
+	 * 
+	 * @throws IOException
+	 */
 	@Test
-	public void testMapExport() throws FileNotFoundException, IOException {
-		List<Map<String, Object>> datas = new ArrayList<>();
-		for (int i = 0; i < 10; i++) {
-			Map<String, Object> data = new LinkedHashMap<>();
-			data.put("index", i);
-			data.put("name", "name" + i);
-			data.put("age", i + 10);
-			datas.add(data);
+	public void testToExcelByMap() throws IOException {
+		ExcelMapper excelMapper = new ExcelMapper();
+		List<LinkedHashMap> list = new ArrayList<>();
+		for (int i = 0; i < 3; i++) {
+			Map<Object, Object> map = new LinkedHashMap<>();
+			map.put("name", "" + "mm" + i);
+			map.put("age", 12 + i);
+			map.put("score", i);
+			list.add((LinkedHashMap) map);
 		}
+		String path = "d:/test.xls";
+		excelMapper.toExcel(list, path);
 
-		ExcelMapper mapper = new ExcelMapper();
-
-		mapper.toExcel(datas, "d:/text.xlsx");
 	}
+
+	@Test
+	public void testUserDefine() {
+		Student stu = new Student();
+		stu.setScore(1d);
+		new ObjectRowMapper<>(Student.class);
+	}
+
 }

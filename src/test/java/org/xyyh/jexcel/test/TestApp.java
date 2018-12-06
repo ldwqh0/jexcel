@@ -10,16 +10,16 @@ public class TestApp {
 
 	public static void main(String[] args) {
 		
-		// ÐÂÔöÒ»¸ö excelµ¼³ö¶ÔÏó
+		// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ excelï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		ExcelMapper mapper = new ExcelMapper();
 		
-		// Éú³ÉÊý¾Ý¶ÓÁÐ
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½ï¿½ï¿½
 		List<User> users = new ArrayList<User>();
 		User user = new User();
 		users.add(user);
 
-		// µ¼³öÊý¾Ý
-		mapper.toExcel(users);
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		mapper.toWorkBook(users);
 	}
 
 }
