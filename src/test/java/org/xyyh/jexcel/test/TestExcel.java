@@ -4,9 +4,7 @@ import org.junit.Test;
 import org.xyyh.jexcel.core.ExcelMapper;
 import org.xyyh.jexcel.core.ObjectRowMapper;
 import org.xyyh.jexcel.test.entity.Student;
-import org.xyyh.jexcel.test.entity.User;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
@@ -70,6 +68,20 @@ public class TestExcel {
 		Student stu = new Student();
 		stu.setScore(1d);
 		new ObjectRowMapper<>(Student.class);
+	}
+
+	@Test
+	public void testImport() throws IOException {
+		ExcelMapper ex = new ExcelMapper();
+		FileInputStream fis = new FileInputStream("d:/test1.xls");
+		//导入生成实体
+        List<Student> list = new ArrayList<>();
+        list = ex.parse(fis, list, Student.class);
+		//导入生成map
+//		List<Map> list1 = new ArrayList<>();
+//		List<Map> mapList = ex.parse(fis, list1, Map.class);
+//		System.out.println(mapList);
+		System.out.println(list.size());
 	}
 
 }
