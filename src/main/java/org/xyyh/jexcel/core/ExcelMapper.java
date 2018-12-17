@@ -12,6 +12,7 @@ import static org.apache.poi.ss.usermodel.CellType.*;
 
 public class ExcelMapper {
 
+	@Deprecated
 	private void writeCell(Cell cell, SimpleCellValue cellValue) {
 		cell.setCellStyle(cellValue.getCellStyle());
 		cell.setCellType(cellValue.getCellType());
@@ -81,39 +82,6 @@ public class ExcelMapper {
 	}
 
 	/**
-	 * 将一组{@link Map}转换为一个工作簿
-	 * 
-	 * @param datas
-	 * @return
-	 */
-	private Workbook mapToWorkBook(List<Map<String, Object>> datas) {
-		if (CollectionUtils.isNotEmpty(datas)) {
-			Map<String, Object> sample = datas.get(0);
-			return this.toWorkBook(datas, new AutoColumnRowMapper(sample));
-		} else {
-			return this.toWorkBook(Collections.<Map<String, Object>>emptyList(),
-					Collections.<String>emptyList(),
-					Collections.<String>emptyList());
-		}
-	}
-
-	/**
-	 * 将一组对象转换为Excel表格
-	 * 
-	 * @param datas
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private <T> Workbook objectToWorkBook(List<T> datas) {
-		if (CollectionUtils.isNotEmpty(datas)) {
-			T data = datas.get(0);
-			return toWorkBook(datas, new ObjectRowMapper<T>((Class<T>) data.getClass()));
-		} else {
-			return null;
-		}
-	}
-
-	/**
 	 * 将一组map对象转换为excel对象 <br />
 	 * 请给定一组键的序列，以便确定导出数据的序列
 	 * 
@@ -174,6 +142,39 @@ public class ExcelMapper {
 			} else {
 				return objectToWorkBook(datas);
 			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * 将一组{@link Map}转换为一个工作簿
+	 * 
+	 * @param datas
+	 * @return
+	 */
+	private Workbook mapToWorkBook(List<Map<String, Object>> datas) {
+		if (CollectionUtils.isNotEmpty(datas)) {
+			Map<String, Object> sample = datas.get(0);
+			return this.toWorkBook(datas, new AutoColumnRowMapper(sample));
+		} else {
+			return this.toWorkBook(Collections.<Map<String, Object>>emptyList(),
+					Collections.<String>emptyList(),
+					Collections.<String>emptyList());
+		}
+	}
+
+	/**
+	 * 将一组对象转换为Excel表格
+	 * 
+	 * @param datas
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> Workbook objectToWorkBook(List<T> datas) {
+		if (CollectionUtils.isNotEmpty(datas)) {
+			T data = datas.get(0);
+			return toWorkBook(datas, new ObjectRowMapper<T>((Class<T>) data.getClass()));
 		} else {
 			return null;
 		}
