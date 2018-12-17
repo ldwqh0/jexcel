@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xyyh.jexcel.utils.DateUtis;
+import org.xyyh.jexcel.utils.FieldUtils;
 import org.xyyh.jexcel.vo.FieldForSortting;
 
 import static org.apache.poi.ss.usermodel.CellType.*;
@@ -120,7 +121,7 @@ public class ExcelMapper {
 							}else{
 								T t = cls.newInstance();
 								//实体类属性字段编号
-								List<FieldForSortting> fileds = sortFieldByAnno(cls);
+								List<FieldForSortting> fileds = FieldUtils.sortFieldByAnno(cls);
 								Iterator<FieldForSortting> filedIterator = fileds.iterator();
 								while(true){
 									while(filedIterator.hasNext()){
@@ -206,7 +207,7 @@ public class ExcelMapper {
 	}
 
 	/**
-	 * 将excel保存到指定
+	 * 将excel保存到指定路径
 	 * 
 	 * @param datas
 	 * @param path
@@ -344,6 +345,8 @@ public class ExcelMapper {
 			break;
 		case ERROR:
 			break;
+		default:
+
 		}
 	}
 
@@ -378,44 +381,4 @@ public class ExcelMapper {
 		}
 	}
 
-	/**
-	 * 给实体类属性值制定顺序
-	 * @param clazz
-	 * @return
-	 */
-	private  List<FieldForSortting> sortFieldByAnno(Class<?> clazz)  {
-		List<FieldForSortting> list = new ArrayList<>();
-		getAllFields(list,clazz);
-		return list;
-	}
-
-	/**
-	 * 递归调用，获取本类所有属性
-	 * @param list
-	 * @param clazz
-	 */
-	private void getAllFields(List<FieldForSortting> list, Class<?> clazz){
-		if(clazz != Object.class){
-			returnClassField(list, clazz);
-			Class supperClazz = clazz.getSuperclass();
-			getAllFields(list,supperClazz);
-		}
-	}
-
-	/**
-	 * 获取当前类所有属性
-	 * @param list
-	 * @param clazz
-	 */
-	private void returnClassField(List<FieldForSortting> list, Class<?> clazz) {
-		Field[] declaredFields = clazz.getDeclaredFields();
-		for (Field declaredField : declaredFields) {
-			FieldForSortting ffs = new FieldForSortting();
-			declaredField.setAccessible(true);
-			ffs.setField(declaredField);
-			ffs.setFieldName(declaredField.getName());
-			ffs.setIndex(0);
-			list.add(ffs);
-		}
-	}
 }
