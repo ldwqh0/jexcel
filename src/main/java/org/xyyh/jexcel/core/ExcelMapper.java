@@ -2,7 +2,7 @@ package org.xyyh.jexcel.core;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.*;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,126 +30,16 @@ public class ExcelMapper {
 	 * @param        <T>
 	 * @return
 	 */
-	public <T> List<T> parse(InputStream stream, List<T> datas, Class<T> cls) {
-		Workbook workbook = null;
-		try {
-			workbook = WorkbookFactory.create(stream);
-		} catch (IOException e) {
-			// 获取工作簿失败
-			logger.error("load excel file error: ", e);
-		}
-		Sheet sheet;
-		Iterator<Row> rowIterator = null;
-		if (workbook != null) {
-			sheet = workbook.getSheetAt(0);
-			rowIterator = sheet.rowIterator();
-		}
-
-		try {
-			// 表头与位置对照
-			Map<String, Integer> titleMap = new HashMap<>();
-			while (true) {
-				Row row;
-				do {
-					while (rowIterator.hasNext()) {
-						row = rowIterator.next();
-						// 略过表头
-						if (row.getRowNum() == 0) {
-							Integer sortNum = 0;
-							// titlemap填充
-							Iterator<Cell> cellIterator1 = row.cellIterator();
-							while (cellIterator1.hasNext()) {
-								String key = cellIterator1.next().toString();
-								titleMap.put(key, sortNum);
-								sortNum++;
-							}
-							continue;
-						}
-						// 判断一行是否为空
-						boolean allRowIsNull = true;
-						Iterator<Cell> cellIterator = row.cellIterator();
-						while (cellIterator.hasNext()) {
-							Object cellValue = getCellValue(cellIterator.next());
-							if (cellValue != null) {
-								allRowIsNull = false;
-								break;
-							}
-						}
-						if (allRowIsNull) {
-							logger.error("Excel row " + row.getRowNum() + " all row value is null!");
-						} else {
-							// 输出map
-							if (cls == Map.class) {
-								Map<String, Object> map = new HashMap<>();
-								// 获取属性和位置对照，并写入map
-								for (Object o : titleMap.keySet()) {
-									String key = (String) o;
-									Integer index = (Integer) titleMap.get(key);
-									Cell cell = row.getCell(index);
-									if (cell == null) {
-										map.put(key, null);
-									} else {
-										cell.setCellType(CellType.STRING);
-										String value = cell.getStringCellValue();
-										map.put(key, value);
-									}
-								}
-								datas.add((T) map);
-							} else {
-								T t = cls.newInstance();
-								// 实体类属性字段编号
-								List<FieldForSortting> fileds = FieldUtils.sortFieldByAnno(cls);
-								Iterator<FieldForSortting> filedIterator = fileds.iterator();
-								while (true) {
-									while (filedIterator.hasNext()) {
-										FieldForSortting ffs = filedIterator.next();
-										Field field = ffs.getField();
-										String fieldName = ffs.getFieldName();
-										field.setAccessible(true);
-										// 对应位置单元格内容
-										Integer sortNum = titleMap.get(fieldName);
-										if (sortNum == null) {
-											break;
-										}
-										Cell cell = row.getCell(sortNum);
-										Object cellValue = getCellValue(cell);
-										// 属性类型转换
-										if (field.getType().equals(Date.class)) {
-											Date value = DateUtis.stringToDate((String) cellValue, DateUtis.TIMESTAMP);
-											field.set(t, value);
-										} else if (field.getType().equals(Integer.class)) {
-											Integer value = ((Double) cellValue).intValue();
-											field.set(t, value);
-										} else if (field.getType().equals(Long.class)) {
-											Long value = ((Double) cellValue).longValue();
-											field.set(t, value);
-										} else if (field.getType().equals(Byte.class)) {
-											byte value = ((Double) cellValue).byteValue();
-											field.set(t, value);
-										} else if (field.getType().equals(Short.class)) {
-											short value = ((Double) cellValue).shortValue();
-											field.set(t, value);
-										} else if (field.getType().equals(Float.class)) {
-											float value = ((Double) cellValue).floatValue();
-											field.set(t, value);
-										} else {
-											field.set(t, cellValue);
-										}
-
-									}
-									datas.add(t);
-									break;
-								}
-							}
-						}
-
-					}
-					return datas;
-				} while (cls != Map.class);
-
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	public <T> List<T> parse(InputStream stream, List<T> datas, Class<T> cls) throws IllegalAccessException,
+			ParseException, InstantiationException {
+		Workbook workBook = getWorkBook(stream);
+		if (workBook != null) {
+			Sheet sheet = workBook.getSheetAt(0);
+			Iterator<Row> rowIterator = sheet.rowIterator();
+			//返回集合信息
+			datas = workBookToList(rowIterator, datas, cls);
+		} else {
+			logger.error("Failed to get the file, please check if the file format is correct");
 		}
 		return datas;
 	}
@@ -357,4 +247,151 @@ public class ExcelMapper {
 			return null;
 		}
 	}
+
+	/**
+	 * 获取工作簿对象
+	 * @param stream
+	 * @return
+	 */
+	private Workbook getWorkBook(InputStream stream) {
+		//创建Workbook工作薄对象，表示整个excel
+		Workbook workbook = null;
+		try {
+			//2007+
+			workbook = new XSSFWorkbook(stream);
+		} catch (IOException e) {
+			logger.error("load excel file error: ",e);
+		}
+		return workbook;
+	}
+
+	/**
+	 * 获取表头信息，按转换类型不同分别转换
+	 * @param rowIterator
+	 * @param datas
+	 * @param cls
+	 * @param <T>
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws ParseException
+	 * @throws InstantiationException
+	 */
+	private <T> List<T> workBookToList(Iterator<Row> rowIterator,List<T> datas, Class<T> cls) throws IllegalAccessException, ParseException, InstantiationException {
+		Map<String, Integer> titleMap = new HashMap<>();
+		Row row;
+		while (rowIterator.hasNext()) {
+			row = rowIterator.next();
+			// 获取表头，并写入map
+			if (row.getRowNum() == 0) {
+				Integer sortNum = 0;
+				// titleMap填充
+				Iterator<Cell> cellIterator = row.cellIterator();
+				while (cellIterator.hasNext()) {
+					String key = cellIterator.next().toString();
+					titleMap.put(key, sortNum);
+					sortNum++;
+				}
+				continue;
+			}
+			//判断一行是否为空
+			boolean allRowIsNull = true;
+			Iterator<Cell> cellIterator = row.cellIterator();
+			while(cellIterator.hasNext()){
+				Object cellValue = getCellValue( cellIterator.next());
+				if(cellValue != null){
+					allRowIsNull = false;
+					break;
+				}
+			}
+			if (allRowIsNull){
+				logger.error("Excel row " + row.getRowNum() + " all row value is null!");
+			}else{
+				if (cls == Map.class){
+					workBookToMapList(datas,row,titleMap);
+				}else{
+					workBookToObjectList(datas,row,titleMap,cls);
+				}
+			}
+		}
+		return datas;
+	}
+
+	/**
+	 *	解析excel生成map集合
+	 * @param datas
+	 * @param row
+	 * @param titleMap
+	 * @param <T>
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> void workBookToMapList(List<T> datas, Row row, Map<String, Integer> titleMap) {
+		Map<String,Object> map = new HashMap<>();
+		//获取属性和位置对照，并写入map
+		for (Object o : titleMap.keySet()) {
+			String key = (String) o;
+			Integer index = titleMap.get(key);
+			Cell cell = row.getCell(index);
+			if (cell == null) {
+				map.put(key, null);
+			} else {
+				cell.setCellType(CellType.STRING);
+				String value = cell.getStringCellValue();
+				map.put(key, value);
+			}
+		}
+		datas.add((T) map);
+	}
+
+	/**
+	 * 解析excel生成实体对象集合
+	 * @param datas 实体对象集合
+	 * @param row excel的行
+	 * @param titleMap 表头名称与位置
+	 * @param cls 类属性
+	 * @param <T>  泛型标志
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws ParseException
+	 */
+	private <T> void workBookToObjectList(List<T> datas, Row row, Map<String, Integer> titleMap, Class<T> cls) throws IllegalAccessException, InstantiationException, ParseException {
+		T t = cls.newInstance();
+		// 实体类属性字段编号
+		List<FieldForSortting> fields = FieldUtils.sortFieldByAnno(cls);
+		for (FieldForSortting ffs : fields) {
+			Field field = ffs.getField();
+			String fieldName = ffs.getFieldName();
+			field.setAccessible(true);
+			// 对应位置单元格内容
+			Integer sortNum = titleMap.get(fieldName);
+			if (sortNum == null) {
+				break;
+			}
+			Cell cell = row.getCell(sortNum);
+			Object cellValue = getCellValue(cell);
+			// 属性类型转换
+			if (field.getType().equals(Date.class)) {
+				Date value = DateUtis.stringToDate((String) cellValue, DateUtis.TIMESTAMP);
+				field.set(t, value);
+			} else if (field.getType().equals(Integer.class)) {
+				Integer value = ((Double) cellValue).intValue();
+				field.set(t, value);
+			} else if (field.getType().equals(Long.class)) {
+				Long value = ((Double) cellValue).longValue();
+				field.set(t, value);
+			} else if (field.getType().equals(Byte.class)) {
+				byte value = ((Double) cellValue).byteValue();
+				field.set(t, value);
+			} else if (field.getType().equals(Short.class)) {
+				short value = ((Double) cellValue).shortValue();
+				field.set(t, value);
+			} else if (field.getType().equals(Float.class)) {
+				float value = ((Double) cellValue).floatValue();
+				field.set(t, value);
+			} else {
+				field.set(t, cellValue);
+			}
+		}
+		datas.add(t);
+	}
+
 }

@@ -6,6 +6,7 @@ import org.xyyh.jexcel.core.ObjectRowMapper;
 import org.xyyh.jexcel.test.entity.Student;
 
 import java.io.*;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -77,16 +78,16 @@ public class TestExcel {
 	}
 
 	@Test
-	public void testImport() throws IOException {
+	public void testImport() throws IOException, IllegalAccessException, ParseException, InstantiationException {
 		ExcelMapper ex = new ExcelMapper();
-		FileInputStream fis = new FileInputStream("d:/test1.xls");
+		FileInputStream fis = new FileInputStream("d:/map.xls");
 		//导入生成实体
-        List<Student> list = new ArrayList<>();
-        list = ex.parse(fis, list, Student.class);
+//        List<Student> list = new ArrayList<>();
+//        list = ex.parse(fis, list, Student.class);
 		//导入生成map
-//		List<Map> list1 = new ArrayList<>();
-//		List<Map> mapList = ex.parse(fis, list1, Map.class);
-//		System.out.println(mapList);
-		System.out.println(list.size());
+		List<Map> list1 = new ArrayList<>();
+		List<Map> mapList = ex.parse(fis, list1, Map.class);
+		System.out.println(mapList);
+//		System.out.println(list.get(0));
 	}
 }
