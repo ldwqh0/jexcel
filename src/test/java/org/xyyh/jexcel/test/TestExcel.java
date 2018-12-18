@@ -4,9 +4,7 @@ import org.junit.Test;
 import org.xyyh.jexcel.core.ExcelMapper;
 import org.xyyh.jexcel.core.ObjectRowMapper;
 import org.xyyh.jexcel.test.entity.Student;
-import org.xyyh.jexcel.test.entity.User;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
@@ -16,8 +14,9 @@ import java.util.*;
  * @Description: 测试提交
  */
 public class TestExcel {
+
 	@Test
-	public void Test() {
+	public void Test() throws IOException {
 		ExcelMapper excelMapper = new ExcelMapper();
 //        List<Map> list = new ArrayList<>();
 //        for (int i = 0; i < 3; i++) {
@@ -31,16 +30,15 @@ public class TestExcel {
 //        excelMapper.WriteToExcel(list,os);
 
 		List<Student> list = new ArrayList<>();
-		;
 		for (int i = 0; i < 3; i++) {
 			Student student = new Student();
-//			student.setId(i);
-//			student.setBirthday(new Date());
+			student.setAge((i+1)*10L);
 			student.setName("pangwa" + i + "");
 			student.setScore(((double) (i + 5)));
 			list.add(student);
 		}
-//        excelMapper.writeToExcel(list,os);
+		String path = "d:/test1.xls";
+        excelMapper.toExcel(list,path);
 		System.out.println("Hello World");
 	}
 
@@ -52,16 +50,22 @@ public class TestExcel {
 	@Test
 	public void testToExcelByMap() throws IOException {
 		ExcelMapper excelMapper = new ExcelMapper();
-		List<LinkedHashMap> list = new ArrayList<>();
+		List<Map> list = new ArrayList<>();
 		for (int i = 0; i < 3; i++) {
-			Map<Object, Object> map = new LinkedHashMap<>();
+			Map<String, Object> map = new LinkedHashMap<>();
 			map.put("name", "" + "mm" + i);
 			map.put("age", 12 + i);
 			map.put("score", i);
-			list.add((LinkedHashMap) map);
+			list.add(map);
 		}
 		String path = "d:/test.xls";
-		excelMapper.toExcel(list, path);
+		//保存到指定路径
+//		excelMapper.toExcel(list, path);
+		//保存到指定文件
+//		excelMapper.toExcel(list, new File("d:/map.xls"));
+		//保存到指定输出流
+		FileOutputStream fileOutputStream = new FileOutputStream("d:/map.xls");
+		excelMapper.toExcel(list,fileOutputStream);
 
 	}
 
@@ -72,4 +76,17 @@ public class TestExcel {
 		new ObjectRowMapper<>(Student.class);
 	}
 
+	@Test
+	public void testImport() throws IOException {
+		ExcelMapper ex = new ExcelMapper();
+		FileInputStream fis = new FileInputStream("d:/test1.xls");
+		//导入生成实体
+        List<Student> list = new ArrayList<>();
+        list = ex.parse(fis, list, Student.class);
+		//导入生成map
+//		List<Map> list1 = new ArrayList<>();
+//		List<Map> mapList = ex.parse(fis, list1, Map.class);
+//		System.out.println(mapList);
+		System.out.println(list.size());
+	}
 }
