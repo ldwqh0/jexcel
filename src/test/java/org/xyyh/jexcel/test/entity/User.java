@@ -4,16 +4,16 @@ import org.xyyh.jexcel.annotations.Col;
 import org.xyyh.jexcel.annotations.ColIgnore;
 import org.xyyh.jexcel.annotations.Sheet;
 
-@Sheet(name = "人员信息表")
+@Sheet(name = "鐢ㄦ埛")
 public class User {
 
-	@Col(name = "姓名")
+	@Col(name = "濮撳悕",sort = 0)
 	private String name;
 
-	@Col(name = "年龄")
+	@Col(name = "骞撮緞",sort = 1)
 	private Long age;
 	
-	@ColIgnore
+	@ColIgnore()
 	private String password;
 
 	public String getName() {

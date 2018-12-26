@@ -1,9 +1,14 @@
 package org.xyyh.jexcel.utils;
 
+import org.xyyh.jexcel.annotations.Col;
+import org.xyyh.jexcel.annotations.ColIgnore;
 import org.xyyh.jexcel.vo.FieldForSortting;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -22,6 +27,7 @@ public class FieldUtils {
     public static List<FieldForSortting> sortFieldByAnno(Class<?> clazz)  {
         List<FieldForSortting> list = new ArrayList<>();
         FieldUtils.getAllFields(list,clazz);
+        list.sort(Comparator.comparingInt(FieldForSortting::getIndex));
         return list;
     }
 
@@ -48,10 +54,20 @@ public class FieldUtils {
         for (Field declaredField : declaredFields) {
             FieldForSortting ffs = new FieldForSortting();
             declaredField.setAccessible(true);
-            ffs.setField(declaredField);
-            ffs.setFieldName(declaredField.getName());
-            ffs.setIndex(0);
-            list.add(ffs);
+            Annotation[] annotations = declaredField.getAnnotations();
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof ColIgnore){
+                    break;
+                } else if(annotation instanceof Col){
+                    Col column = (Col)annotation;
+                    String name = column.name();
+                    int sort = column.sort();
+                    ffs.setFieldName("".equals(name)?declaredField.getName():name);
+                    ffs.setIndex(sort >= 0?sort:-1);
+                    ffs.setField(declaredField);
+                }
+                list.add(ffs);
+            }
         }
     }
 }

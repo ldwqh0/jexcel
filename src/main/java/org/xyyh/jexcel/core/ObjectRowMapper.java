@@ -40,6 +40,8 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 //				System.out.println(methods[i]);
 //			}
 			List<FieldForSortting> ffs = FieldUtils.sortFieldByAnno(tClass);
+			int size = ffs.size();
+			setColumnCount(size);
 			List<String> fieldNames = new ArrayList<>();
 			List<Field> fields = new ArrayList<>();
 			for (FieldForSortting ff : ffs) {
@@ -51,7 +53,7 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 			setHeaders(fieldNames);
 			setKeys(fields);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 
@@ -63,6 +65,10 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 		this.keys = keys;
 	}
 
+	private void setColumnCount(int size){
+		this.columnCount = size;
+	}
+
 	@Override
 	public List<String> getHeaders() {
 		return headers;
@@ -70,7 +76,7 @@ public class ObjectRowMapper<T> implements RowMapper<T> {
 
 	@Override
 	public int getColumnCount() {
-		return headers.size();
+		return columnCount;
 	}
 
 	@Override

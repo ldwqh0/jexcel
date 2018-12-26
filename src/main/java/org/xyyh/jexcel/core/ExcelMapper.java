@@ -142,7 +142,19 @@ public class ExcelMapper {
 	 */
 	public <T> Workbook toWorkBook(List<T> datas, RowMapper<T> rowMapper) {
 		Workbook workbook = new XSSFWorkbook();
-		Sheet sheet1 = workbook.createSheet();
+		Sheet sheet1 = null;
+		Class<?> aClass = datas.get(0).getClass();
+		boolean isPresent = aClass.isAnnotationPresent(org.xyyh.jexcel.annotations.Sheet.class);
+		if(isPresent){
+			org.xyyh.jexcel.annotations.Sheet annotation =
+					aClass.getAnnotation(org.xyyh.jexcel.annotations.Sheet.class);
+			String name = annotation.name();
+			if (!"".equals(name)){
+				sheet1 = workbook.createSheet(name);
+			}
+		}else{
+			sheet1 = workbook.createSheet();
+		}
 		List<String> header = rowMapper.getHeaders();
 		Row headerRow = sheet1.createRow(0);
 		int columnCount = rowMapper.getColumnCount();
@@ -232,11 +244,6 @@ public class ExcelMapper {
 			} else if (cellType == CellType.ERROR) {
 				return cell.getErrorCellValue();
 			} else if (cellType == CellType.FORMULA) {
-				/*
-				 * try { return HSSFDateUtil.isCellDateFormatted(cell) ? cell.getDateCellValue()
-				 * : cell.getNumericCellValue(); } catch (IllegalStateException var3) { return
-				 * cell.getRichStringCellValue(); }
-				 */
 				return null;
 			} else if (cellType == CellType.NUMERIC) {
 				return DateUtil.isCellDateFormatted(cell) ? cell.getDateCellValue() : cell.getNumericCellValue();

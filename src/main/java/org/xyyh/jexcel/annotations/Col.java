@@ -1,9 +1,10 @@
 package org.xyyh.jexcel.annotations;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 @Target({ ElementType.FIELD, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Col {
 
 	/**
@@ -18,6 +19,6 @@ public @interface Col {
 	 * 
 	 * @return
 	 */
-	int sort() default 0;
+	int sort() default -1;
 
 }

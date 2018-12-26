@@ -6,6 +6,11 @@ import org.xyyh.jexcel.core.ObjectRowMapper;
 import org.xyyh.jexcel.test.entity.Student;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.text.ParseException;
 import java.util.*;
 
@@ -27,7 +32,7 @@ public class TestExcel {
 //            map.put(12,++i);
 //            list.add(map);
 //        }
-		OutputStream os = System.out;
+//		OutputStream os = System.out;
 //        excelMapper.WriteToExcel(list,os);
 
 		List<Student> list = new ArrayList<>();
@@ -38,7 +43,7 @@ public class TestExcel {
 			student.setScore(((double) (i + 5)));
 			list.add(student);
 		}
-		String path = "d:/test1.xls";
+		String path = "d:/test2.xls";
         excelMapper.toExcel(list,path);
 		System.out.println("Hello World");
 	}
@@ -63,10 +68,10 @@ public class TestExcel {
 		//保存到指定路径
 //		excelMapper.toExcel(list, path);
 		//保存到指定文件
-//		excelMapper.toExcel(list, new File("d:/map.xls"));
+		excelMapper.toExcel(list, new File("d:/map.xls"));
 		//保存到指定输出流
-		FileOutputStream fileOutputStream = new FileOutputStream("d:/map.xls");
-		excelMapper.toExcel(list,fileOutputStream);
+//		FileOutputStream fileOutputStream = new FileOutputStream("d:/map.xls");
+//		excelMapper.toExcel(list,fileOutputStream);
 
 	}
 
