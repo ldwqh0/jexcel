@@ -7,7 +7,6 @@ import org.xyyh.jexcel.vo.FieldForSortting;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -55,19 +54,27 @@ public class FieldUtils {
             FieldForSortting ffs = new FieldForSortting();
             declaredField.setAccessible(true);
             Annotation[] annotations = declaredField.getAnnotations();
-            for (Annotation annotation : annotations) {
-                if (annotation instanceof ColIgnore){
-                    break;
-                } else if(annotation instanceof Col){
-                    Col column = (Col)annotation;
-                    String name = column.name();
-                    int sort = column.sort();
-                    ffs.setFieldName("".equals(name)?declaredField.getName():name);
-                    ffs.setIndex(sort >= 0?sort:-1);
-                    ffs.setField(declaredField);
+            if (annotations.length>0){
+                for (Annotation annotation : annotations) {
+                    if (annotation instanceof ColIgnore){
+                        continue;
+                    } else if(annotation instanceof Col){
+                        Col column = (Col)annotation;
+                        String name = column.name();
+                        int sort = column.sort();
+                        ffs.setFieldName("".equals(name)?declaredField.getName():name);
+                        ffs.setIndex(sort);
+                        ffs.setField(declaredField);
+                    }
+                    list.add(ffs);
                 }
+            }else{
+                ffs.setField(declaredField);
+                ffs.setFieldName(declaredField.getName());
+                ffs.setIndex(0);
                 list.add(ffs);
             }
+
         }
     }
 }
