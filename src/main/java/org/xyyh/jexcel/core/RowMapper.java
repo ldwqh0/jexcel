@@ -1,8 +1,8 @@
 package org.xyyh.jexcel.core;
 
-import java.util.List;
-
 import org.apache.poi.ss.usermodel.CellValue;
+
+import java.util.List;
 
 public interface RowMapper<T> {
 
@@ -19,5 +19,5 @@ public interface RowMapper<T> {
 	public int getColumnCount();
 
 	
-	public CellValue getCellValue(int colIndex, T data);
+	public CellValue getCellValue(int colIndex, T data) ;
 }

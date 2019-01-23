@@ -22,7 +22,6 @@ public class FieldForSortting implements Comparator<FieldForSortting> {
         this.fieldName = fieldName;
         this.index = index;
     }
-
     public Field getField() {
         return field;
     }
