@@ -13,7 +13,7 @@ import java.util.*;
 public class ExcelUtil {
 
     public static void main(String[] args) {
-        List<MyUserDetail> myUserDetails =new ArrayList<>();
+      /*  List<MyUserDetail> myUserDetails =new ArrayList<>();
         for (int i = 0; i < 100000; i++) {
             MyUserDetail myUserDetail =new MyUserDetail();
             myUserDetail.setDate(new Date());
@@ -28,17 +28,18 @@ public class ExcelUtil {
         BeanToExcel beanToExcel = getEmptyBeanToExcel();
         beanToExcel.addSheet(myUserDetails,beanToExcel.getWorkbook());
         writeExel(beanToExcel.getWorkbook(),url);
-        System.out.println("写如数据完成，耗时："+((System.currentTimeMillis()-b)/1000)+"秒");
+        System.out.println("写如数据完成，耗时："+((System.currentTimeMillis()-b)/1000)+"秒");*/
 
-        b =System.currentTimeMillis();
+        String url ="C:\\Users\\Administrator\\Desktop\\test.xls";
+       long b =System.currentTimeMillis();
         System.out.println("开始写如100000条数据");
         ExcelRowMapper excelRowMapper = readExcel(url);
         Map<String,List> map =new HashMap<>();
         SheetRowMapper sheetRowMapper = excelRowMapper.getSheetMapperByNames("MyUserDetail");
-        List list =sheetRowMapper.getBeanist(Map.class);
+        List list =sheetRowMapper.getBeanist(MyUserDetail.class);
         map.put(sheetRowMapper.getSheetName(),list);
         System.out.println("读取数据，耗时："+((System.currentTimeMillis()-b)/1000)+"秒");
-        System.out.println(map.toString());
+       System.out.println(map.toString());
 
 
         //映射间的相互转换

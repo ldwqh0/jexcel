@@ -20,6 +20,9 @@ public class MyUserDetail  implements Serializable {
     private String name;
     @Col(name = "时间")
     private Date date;
+
+
+
     public String getClientId() {
         return clientId;
     }
@@ -35,7 +38,7 @@ public class MyUserDetail  implements Serializable {
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
     }
-    @Col(name = "名字")
+
     public String getName() {
         return name;
     }
@@ -50,5 +53,9 @@ public class MyUserDetail  implements Serializable {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+    @Override
+    public String toString(){
+        return "{clientId："+clientId+",clientSecret:"+clientSecret+",name:"+name+",date:"+date+ "}";
     }
 }

@@ -29,7 +29,6 @@ public class MyClassUtil {
         while (flag){
             Field[] fields =superClass.getDeclaredFields();
             for (int i = 0; i <fields.length ; i++) {
-                Map<String,Object> map =new HashMap<>();
                 list.add(getFieldMsg(fields[i],superClass));
             }
             superClass =superClass.getSuperclass();

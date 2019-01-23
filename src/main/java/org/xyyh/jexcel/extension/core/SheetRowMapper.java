@@ -54,8 +54,6 @@ public class SheetRowMapper {
         if (tClass.isAssignableFrom(Map.class)){
             return  (List<T>) dataList;
         }
-
-
         List<T> tList =new ArrayList<>();
         List<Map<String,Object>> list =getInitField(tClass);
         try {
@@ -72,6 +70,7 @@ public class SheetRowMapper {
                     //因为时间字符串我全转的localdate 说以是时间需要处理下
                     if (fieldType.equalsIgnoreCase("date")){
                         LocalDate localDate =(LocalDate)value;
+                        System.out.println(localDate==null);
                         ZonedDateTime zdt = localDate.atStartOfDay(ZoneId.systemDefault());
                         Date date =Date.from(zdt.toInstant());
                         field.set(t,date);
@@ -137,11 +136,12 @@ public class SheetRowMapper {
                 break;
             case STRING:
                 String timeStr = cell.getRichStringCellValue().getString().trim();
-                if (timeStr.matches("\\d{4}-\\d{2}-\\d{2}")){
+                if (timeStr.matches("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}")){
                     String patter = timeStr.matches("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}")?
                             "yyyy-MM-dd HH:mm:ss":"yyyy-MM-dd";
                     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(patter);
-                    LocalDate date = LocalDate.parse(timeStr,dateTimeFormatter);
+                    ret = LocalDate.parse(timeStr,dateTimeFormatter);
+
                 }else {
                     ret=timeStr;
                 }
@@ -178,7 +178,7 @@ public class SheetRowMapper {
                 FieldMsg fieldMsg =list.get(j);
                 //没有SET方法跳出当前循环,这个字段不初始化
                 if (fieldMsg.getSetMethod()==null){
-                    break;
+                    continue;
                 }
                 Field field =fieldMsg.getField();
                 //如果字段名和表头名字一样
@@ -205,6 +205,7 @@ public class SheetRowMapper {
                     fieldMap.put("field",field);
                     fieldMap.put("header",header);
                     list3.add(fieldMap);
+                    break;
                 }
             }
         }
